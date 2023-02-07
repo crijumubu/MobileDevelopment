@@ -3,11 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'Card.dart' as identification;
 import 'Student.dart';
 
-class Body extends StatelessWidget{
+class App extends StatelessWidget{
 
   List<Student> students;
 
-  Body(this.students, {super.key});
+  App(this.students, {super.key});
 
   List<Widget> _createChildren(){
     List<Widget> cards = [];
@@ -23,6 +23,8 @@ class Body extends StatelessWidget{
   Widget build(BuildContext context) {
 
     return Scaffold(
+
+      backgroundColor: const Color.fromRGBO(255, 252, 247, 1),
 
       appBar: AppBar(
 
