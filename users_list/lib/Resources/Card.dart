@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Student.dart';
 
@@ -21,16 +20,18 @@ class Card extends StatelessWidget{
           margin: const EdgeInsets.only(right: 5, left: 5, bottom: 7),
           child: Column(
 
-            children: const [
-
-              Icon(Icons.account_circle_sharp, size: 90, color: Colors.black)
+            children: [
+              CircleAvatar(
+                  backgroundImage: AssetImage(student.getImage),
+                  radius: 45
+              ) //Icon(Icons.account_circle_sharp, size: 90, color: Colors.black)
             ],
           ),
         ),
 
         Container(
 
-          margin: const EdgeInsets.only(right: 2.5, left: 7.5, bottom: 7),
+          margin: const EdgeInsets.only(right: 2.5, left: 12.5, bottom: 7),
           child: Column(
 
             crossAxisAlignment: CrossAxisAlignment.start,

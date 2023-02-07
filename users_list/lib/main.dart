@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
-import 'Body.dart' as design;
-import 'Student.dart';
+import './Resources/Body.dart' as design;
+import './Resources/Student.dart';
+import './Resources/Database/Mongo.dart';
 
-void main() {
+List<Student> students = [];
+
+void main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Mongo.connect();
+  var data = await Mongo.getDocuments();
+  makeStudents(data);
+
   runApp(const MyApp());
 }
 
-List<Student> students = [Student('Cristian Munoz', 'Ing. Sistemas', 4.2), Student('Daniela Moreno', 'Psicologia', 5), Student('Santiago Hernandez', 'Ing. Mecanica', 4.5), Student('Lina Celedon', 'Ing. Civil', 4.1), Student('Nicolas Florez', 'Derecho', 3.9), Student('Valeria Bernal', 'Adm. Empresas', 4.0), Student('Sergio Baron', 'Ing. Sistemas', 4.2)];
+void makeStudents(List data){
+
+  for (int i=0; i<data.length; i++){
+    students.add(Student(data[i]['Name'], data[i]['Degree'], double.parse(data[i]['Grade'].toString()), data[i]['Image']));
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
