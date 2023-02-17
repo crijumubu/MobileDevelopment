@@ -8,18 +8,15 @@ class usersController {
     constructor() {
         this.login = (req, res) => {
             const { email, password } = req.body;
-            this.model.login(email, password, (error, status, row) => {
-                if (error) {
-                    return res.json({ error: true, message: 'Upss, algo ha salido mal!' });
+            this.model.login(email, password, (validation) => {
+                if (validation == 1) {
+                    return res.json({ message: 'Inicio de sesion exitoso!' });
                 }
-                if (status == 1) {
-                    return res.json({ message: 'Inicio de sesion exitoso!', row });
-                }
-                else if (status == 0) {
-                    return res.json({ message: 'Contraseña incorrecta!' });
+                else if (validation == 0) {
+                    return res.json({ message: 'Email o contraseña incorrecta!' });
                 }
                 else {
-                    return res.status(404).json({ error: false, message: 'Upss, no pudimos encontrar tu cuenta!' });
+                    return res.status(404).json({ error: false, message: 'Upss, algo ha salido mal!' });
                 }
             });
         };
