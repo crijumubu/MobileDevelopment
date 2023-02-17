@@ -18,6 +18,7 @@ class usersModel{
         fn(validation);
 
     }
+
 }
 
 export default usersModel;
