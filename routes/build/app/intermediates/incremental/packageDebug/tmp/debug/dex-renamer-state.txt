@@ -1,4 +1,0 @@
-#Mon Feb 20 11:42:33 COT 2023
-base.0=/home/cristian/Documents/StudioProjects/routes/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
