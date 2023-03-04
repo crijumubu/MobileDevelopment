@@ -13,10 +13,19 @@ class usersModel{
         
 
         this.mongo.connect();
+        this.mongo.setModel = 0;
 
-        const validation = await this.mongo.model.count({'email': email, 'password': password});
+        const validation = await this.mongo.model.find({'email': email, 'password': password}, {"name": 1, "_id":0});
         fn(validation);
+    }
 
+    public getProducts = async(fn: Function) => {
+
+        this.mongo.connect();
+        
+        this.mongo.setModel = 1;
+        const products = await this.mongo.model.find({}, {"_id":0});
+        fn(products);
     }
 
 }

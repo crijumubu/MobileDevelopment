@@ -13,6 +13,7 @@ class usersRoute {
     }
     config() {
         this.router.post("/login", this.controller.login);
+        this.router.get("/products", this.controller.verifyToken, this.controller.getProducts);
     }
 }
 exports.default = usersRoute;

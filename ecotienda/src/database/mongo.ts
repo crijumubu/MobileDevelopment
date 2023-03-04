@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import userSchema from "./schema/userSchema";
+import productSchema from "./schema/productSchema";
 
 class mongo{
 
@@ -24,6 +25,17 @@ class mongo{
             console.error('Error connecting to MongoDB Atlas: ', error);
             return process.exit(1);
         });
+    }
+
+    public set setModel(option: number){
+
+        if (option == 0){
+
+            this.model = userSchema;
+        }else{
+
+            this.model = productSchema;
+        }
     }
 }
 

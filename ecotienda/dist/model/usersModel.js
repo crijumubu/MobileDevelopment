@@ -17,8 +17,15 @@ class usersModel {
     constructor() {
         this.login = (email, password, fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
-            const validation = yield this.mongo.model.count({ 'email': email, 'password': password });
+            this.mongo.setModel = 0;
+            const validation = yield this.mongo.model.find({ 'email': email, 'password': password }, { "name": 1, "_id": 0 });
             fn(validation);
+        });
+        this.getProducts = (fn) => __awaiter(this, void 0, void 0, function* () {
+            this.mongo.connect();
+            this.mongo.setModel = 1;
+            const products = yield this.mongo.model.find({}, { "_id": 0 });
+            fn(products);
         });
         this.mongo = new mongo_1.default();
     }

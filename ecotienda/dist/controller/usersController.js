@@ -9,16 +9,14 @@ class usersController {
     constructor() {
         this.login = (req, res) => {
             const { email, password } = req.body;
-            this.model.login(email, password, (validation) => {
-                if (validation == 1) {
-                    const token = jwt.sign({ email: email, password: password }, process.env.TOKEN_SECRET, { expiresIn: '1m', algorithm: "HS256" });
+            this.model.login(email, password, (row) => {
+                if (Object.keys(row).length != 0) {
+                    const username = JSON.parse(JSON.stringify(row))[0]['name'];
+                    const token = jwt.sign({ name: username, email: email, password: password }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
                     res.header('auth-token', token).json({ error: null, data: { token } });
                 }
-                else if (validation == 0) {
+                else if (Object.keys(row).length == 0) {
                     return res.status(404).json({ message: 'Email o contraseña incorrecta!' });
-                }
-                else {
-                    return res.status(404).json({ error: false, message: 'Upss, algo ha salido mal!' });
                 }
             });
         };
@@ -31,6 +29,7 @@ class usersController {
             try {
                 const decodedToken = jwt.verify(bearerToken, process.env.TOKEN_SECRET);
                 req.body.user = decodedToken;
+                next();
             }
             catch (error) {
                 if (error instanceof jwt.TokenExpiredError) {
@@ -40,7 +39,16 @@ class usersController {
                     res.status(406).json({ error: 'EL token no es válido!' });
                 }
             }
-            next();
+        };
+        this.getProducts = (req, res) => {
+            this.model.getProducts((row) => {
+                if (Object.keys(row).length != 0) {
+                    res.status(200).json(row);
+                }
+                else {
+                    return res.status(404).json({ error: false, message: 'No hay disponibles para mostrar!' });
+                }
+            });
         };
         this.model = new usersModel_1.default();
     }
