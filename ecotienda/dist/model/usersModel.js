@@ -19,7 +19,7 @@ class usersModel {
         this.login = (email, password, fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
             this.mongo.setModel = 0;
-            yield this.mongo.model.find({ 'email': email }, { "name": 1, "password": 1, "_id": 0 })
+            yield this.mongo.model.find({ 'email': email }, { 'name': 1, 'password': 1, '_id': 0 })
                 .then((response) => {
                 if (response.length == 1) {
                     if (bcryptjs_1.default.compareSync(password, response[0]['password'])) {
@@ -37,15 +37,43 @@ class usersModel {
         this.register = (name, email, password, fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
             this.mongo.setModel = 0;
-            yield this.mongo.model.create({ 'name': name, 'email': email, 'password': this.cryptPassword(password), 'favorite': [] }, (error) => {
+            yield this.mongo.model.create({ 'name': name, 'email': email, 'password': this.cryptPassword(password), 'favorites': [] }, (error) => {
                 fn(error);
             });
         });
         this.getProducts = (fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
             this.mongo.setModel = 1;
-            const products = yield this.mongo.model.find({}, { "_id": 0 });
-            fn(products);
+            yield this.mongo.model.find({}, { '_id': 0 })
+                .then((response, error) => {
+                fn(error, response);
+            });
+        });
+        this.getFavorites = (email, fn) => __awaiter(this, void 0, void 0, function* () {
+            this.mongo.connect();
+            this.mongo.setModel = 0;
+            yield this.mongo.model.find({ 'email': email, favorites: { $ne: [] } }, { 'favorites': 1, '_id': 0 })
+                .then((response, error) => {
+                fn(error, response);
+            });
+        });
+        // TODO - Validar que el producto verdaderamente exista
+        this.addFavorites = (email, product, fn) => __awaiter(this, void 0, void 0, function* () {
+            this.mongo.connect();
+            this.mongo.setModel = 0;
+            if (typeof product == 'string') {
+                fn(0);
+                return;
+            }
+            yield this.mongo.model.findOneAndUpdate({ 'email': email }, { $push: { 'favorites': product } })
+                .then((response, error) => {
+                if (!error) {
+                    fn(1);
+                }
+                else {
+                    fn(-1);
+                }
+            });
         });
         this.cryptPassword = (password) => {
             const salt = bcryptjs_1.default.genSaltSync(10);

@@ -22,7 +22,7 @@ class usersController{
 
                 case 1:
 
-                    const token = jwt.sign({ name: name, email: email, password: password }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
+                    const token = jwt.sign({ name: name, email: email}, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
                     res.header('auth-token', token).json({ error: null, data: {name, token} });
                     break;
 
@@ -55,11 +55,71 @@ class usersController{
 
                     return res.status(409).json({ error: true, message: 'El correo ya se encuentra en uso!' });
                 }
-                else{
-
-                    return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
-                }
+                
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
             }
+        });
+    }
+
+    public getProducts = (req: Request, res: Response) => {
+
+        this.model.getProducts((error: any, row: JSON) => {
+            
+            if (error){
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la inserción!' });
+            }
+
+            if (Object.keys(row).length != 0){
+
+                return res.status(200).json(row);
+            }
+
+            return res.status(200).json({ error: false, message: 'No hay productos favoritos por el momento!' });
+        });
+    }
+
+    public addFavorites = (req: Request, res: Response) => {
+
+        const { product } = req.body;
+        const email = req.body.user["email"];
+
+        this.model.addFavorites(email, product, (status: number) => {
+
+            switch (status){
+
+                case 1:
+
+                    return res.status(200).json({ error: false, message: 'Inserción exitosa!' });
+                
+                case 0:
+
+                    return res.status(200).json({ error: true, message: 'El producto ingresado no es válido!' });
+
+                case -1:
+
+                    return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la inserción!' });
+            }
+        });
+    }
+
+    public getFavorites = (req: Request, res: Response) => {
+
+        const email = req.body.user["email"];
+
+        this.model.getFavorites(email, (error: any, row: JSON) => {
+            
+            if (error){
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la inserción!' });
+            }
+
+            if (Object.keys(row).length != 0){
+
+                return res.status(200).json(row);
+            }
+
+            return res.status(200).json({ error: false, message: 'No hay productos favoritos por el momento!' });
         });
     }
 
@@ -69,7 +129,7 @@ class usersController{
 
         if (!authorization){
 
-            return res.status(401).json({ error: 'No se ha proporcionado un token de acceso. Acceso denegado!' });
+            return res.status(401).json({ error: true, message: 'No se ha proporcionado un token de acceso. Acceso denegado!' });
         } 
 
         const bearerToken = authorization.split(' ')[1];
@@ -84,27 +144,11 @@ class usersController{
 
             if (error instanceof jwt.TokenExpiredError){
                 
-                res.status(200).json({ message: 'El token ha expirado!'});
+                res.status(200).json({ error: true, message: 'El token ha expirado!' });
             }
-            else{
-
-                res.status(406).json({error: 'EL token no es válido!'});
-            }
-        }
-    }
-
-    public getProducts = (req: Request, res: Response) => {
-
-        this.model.getProducts((row: JSON) => {
             
-            if (Object.keys(row).length != 0){
-
-                res.status(200).json(row);
-            }else {
-
-                return res.status(404).json({ error: false, message: 'No hay disponibles para mostrar!' });
-            }
-        });
+            res.status(406).json({ error: true, message: 'EL token no es válido!' });
+        }
     }
 }
 

@@ -1,5 +1,7 @@
-import mongo from "../database/mongo";
-import bcrypt from "bcryptjs";
+import { EmitFlags } from 'typescript';
+import mongo from '../database/mongo';
+import bcrypt from 'bcryptjs';
+import { response } from 'express';
 
 class usersModel{
 
@@ -16,7 +18,7 @@ class usersModel{
         this.mongo.connect();
         this.mongo.setModel = 0;
 
-        await this.mongo.model.find({'email': email}, {"name":1, "password": 1, "_id":0})
+        await this.mongo.model.find({'email': email}, {'name':1, 'password': 1, '_id':0})
         .then((response: any) => {
             
             if(response.length == 1){
@@ -42,8 +44,7 @@ class usersModel{
         this.mongo.connect();
         this.mongo.setModel = 0;
 
-
-        await this.mongo.model.create({'name': name, 'email': email, 'password': this.cryptPassword(password), 'favorite': []}, (error: any) => {
+        await this.mongo.model.create({'name': name, 'email': email, 'password': this.cryptPassword(password), 'favorites': []}, (error: any) => {
 
             fn(error);
         });
@@ -52,10 +53,51 @@ class usersModel{
     public getProducts = async(fn: Function) => {
 
         this.mongo.connect();
-        
         this.mongo.setModel = 1;
-        const products = await this.mongo.model.find({}, {"_id":0});
-        fn(products);
+
+        await this.mongo.model.find({}, {'_id':0})
+        .then((response: any, error: any) => {
+            
+            fn(error, response);
+        });
+    }
+
+    public getFavorites = async(email: string, fn: Function) => {
+
+        this.mongo.connect();
+        this.mongo.setModel = 0;
+
+        await this.mongo.model.find({'email': email, favorites: { $ne: [] }}, {'favorites': 1,'_id':0})
+        .then((response: any, error: any) => {
+            
+            fn(error, response);
+        });
+    }
+
+    // TODO - Validar que el producto verdaderamente exista
+    public addFavorites = async (email: string, product: number, fn: Function) => {
+        
+
+        this.mongo.connect();
+        this.mongo.setModel = 0;
+        
+        if (typeof product == 'string'){
+
+            fn(0);
+            return;
+        }
+
+        await this.mongo.model.findOneAndUpdate({'email': email}, {$push: {'favorites': product}})
+        .then((response: any, error: any) => {
+            
+            if (!error){
+
+                fn(1);
+            }else{
+
+                fn(-1);
+            }
+        })
     }
 
     public cryptPassword = (password: string) => {
