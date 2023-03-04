@@ -8,11 +8,18 @@ const usersSchema = new mongoose_1.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         requied: true
+    },
+    favorites: {
+        type: Array,
+        requied: true
     }
+}, {
+    versionKey: false
 });
 exports.default = (0, mongoose_1.model)('users', usersSchema);

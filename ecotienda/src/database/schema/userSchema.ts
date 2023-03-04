@@ -8,12 +8,20 @@ const usersSchema = new Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         requied: true
+    },
+    favorites: {
+        type: Array,
+        requied: true
     }
+}, 
+{
+    versionKey: false
 });
 
 export default model<IUsers>('users', usersSchema);

@@ -9,14 +9,33 @@ class usersController {
     constructor() {
         this.login = (req, res) => {
             const { email, password } = req.body;
-            this.model.login(email, password, (row) => {
-                if (Object.keys(row).length != 0) {
-                    const username = JSON.parse(JSON.stringify(row))[0]['name'];
-                    const token = jwt.sign({ name: username, email: email, password: password }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
-                    res.header('auth-token', token).json({ error: null, data: { token } });
+            this.model.login(email, password, (status, name) => {
+                switch (status) {
+                    case 1:
+                        const token = jwt.sign({ name: name, email: email, password: password }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
+                        res.header('auth-token', token).json({ error: null, data: { name, token } });
+                        break;
+                    case 0:
+                        return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!' });
+                    case -1:
+                        return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
                 }
-                else if (Object.keys(row).length == 0) {
-                    return res.status(404).json({ message: 'Email o contraseña incorrecta!' });
+            });
+        };
+        this.register = (req, res) => {
+            const { name, email, password } = req.body;
+            this.model.register(name, email, password, (error) => {
+                if (!error) {
+                    return res.status(200).json({ error: false, message: 'Registro exitóso!' });
+                }
+                else {
+                    const usedEmailError = error.keyPattern['email'];
+                    if (usedEmailError) {
+                        return res.status(409).json({ error: true, message: 'El correo ya se encuentra en uso!' });
+                    }
+                    else {
+                        return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
+                    }
                 }
             });
         };
