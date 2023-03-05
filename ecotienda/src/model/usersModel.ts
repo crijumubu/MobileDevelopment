@@ -16,7 +16,7 @@ class usersModel{
         this.mongo.connect();
         this.mongo.setModel = 0;
 
-        await this.mongo.model.find({'email': email}, {'name':1, 'password': 1, '_id':0})
+        await this.mongo.model.find({'email': email}, {'name':1, 'password': 1, '_id': 0})
         .then((response: any) => {
             
             if(response.length == 1){
@@ -46,6 +46,18 @@ class usersModel{
 
             fn(error);
         });
+    }
+
+    public getProduct = async(product: number, fn: Function) => {
+
+        this.mongo.connect();
+        this.mongo.setModel = 1;
+
+        return await this.mongo.model.find({'id': product}, {'_id': 0}) 
+        .then((response: any, error: any) => {
+            
+            fn(error, response);
+        });  
     }
 
     public getProducts = async(fn: Function) => {

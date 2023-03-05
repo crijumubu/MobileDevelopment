@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -64,15 +73,27 @@ class usersController {
         };
         this.getFavorites = (req, res) => {
             const email = req.body.user["email"];
-            this.model.getFavorites(email, (error, row) => {
+            this.model.getFavorites(email, (error, row) => __awaiter(this, void 0, void 0, function* () {
                 if (error) {
-                    return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la inserción!' });
+                    return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la consulta de favoritos para este usuario!' });
                 }
                 if (Object.keys(row).length != 0) {
-                    return res.status(200).json(row);
+                    const ids = JSON.parse(JSON.stringify(row))[0]['favorites'];
+                    const favorites = [];
+                    for (let i = 0; i < ids.length; i++) {
+                        yield this.model.getProduct(parseInt(ids[i]), (productError, product) => {
+                            if (!productError) {
+                                favorites.push(product);
+                            }
+                            else {
+                                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la consulta de favoritos para este usuario!' });
+                            }
+                        });
+                    }
+                    return res.status(200).json(favorites);
                 }
                 return res.status(200).json({ error: false, message: 'No hay productos favoritos por el momento!' });
-            });
+            }));
         };
         this.getProductImage = (req, res) => {
             const { id } = req.params;

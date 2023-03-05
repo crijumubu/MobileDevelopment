@@ -41,6 +41,14 @@ class usersModel {
                 fn(error);
             });
         });
+        this.getProduct = (product, fn) => __awaiter(this, void 0, void 0, function* () {
+            this.mongo.connect();
+            this.mongo.setModel = 1;
+            return yield this.mongo.model.find({ 'id': product }, { '_id': 0 })
+                .then((response, error) => {
+                fn(error, response);
+            });
+        });
         this.getProducts = (fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
             this.mongo.setModel = 1;

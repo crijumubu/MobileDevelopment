@@ -107,16 +107,34 @@ class usersController{
 
         const email = req.body.user["email"];
 
-        this.model.getFavorites(email, (error: any, row: JSON) => {
+        this.model.getFavorites(email, async (error: any, row: JSON) => {
             
             if (error){
 
-                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la inserción!' });
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la consulta de favoritos para este usuario!' });
             }
 
             if (Object.keys(row).length != 0){
+                
+                const ids = JSON.parse(JSON.stringify(row))[0]['favorites'];
+                const favorites: any[] = [];
+                
+                for (let i=0; i<ids.length; i++){
 
-                return res.status(200).json(row);
+                    await this.model.getProduct(parseInt(ids[i]), (productError: any, product: any) => {
+
+                        if (!productError){
+                    
+                            favorites.push(product);
+                        }
+                        else{
+
+                            return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la consulta de favoritos para este usuario!' });
+                        }
+                    });
+                }
+                
+                return res.status(200).json(favorites);
             }
 
             return res.status(200).json({ error: false, message: 'No hay productos favoritos por el momento!' });
