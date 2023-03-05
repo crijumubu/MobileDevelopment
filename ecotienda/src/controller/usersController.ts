@@ -123,6 +123,22 @@ class usersController{
         });
     }
 
+    public getProductImage = (req: Request, res: Response) => {
+        
+        const { id } = req.params;
+
+        this.model.getProductImage(parseInt(id), (row: string) => {
+
+            if (row != ''){
+
+                res.download(row);
+            } else{
+
+                return res.status(404).json({ error: true, message: 'No existen productos con ese id!' });
+            }
+        });
+    }
+
     public verifyToken = (req: Request, res: Response, next: Function) => {
 
         const { authorization } = req.headers;

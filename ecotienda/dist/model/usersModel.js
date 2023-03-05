@@ -74,6 +74,16 @@ class usersModel {
                 }
             });
         });
+        this.getProductImage = (id, fn) => __awaiter(this, void 0, void 0, function* () {
+            this.mongo.connect();
+            this.mongo.setModel = 1;
+            const product = yield this.mongo.model.findOne({ 'id': id });
+            let imagePath = '';
+            if (product != null) {
+                imagePath = `./src/resources/${id}.jpg`;
+            }
+            fn(imagePath);
+        });
         this.cryptPassword = (password) => {
             const salt = bcryptjs_1.default.genSaltSync(10);
             const hashedPassword = bcryptjs_1.default.hashSync(password, salt);

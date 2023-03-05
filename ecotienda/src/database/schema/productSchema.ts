@@ -10,15 +10,11 @@ const productsSchema = new Schema({
         type: String,
         required: true
     },
-    description: {
-        type: String,
-        required: true
-    },
     brand: {
         type: String,
         required: true
     },
-    price: {
+    rate: {
         type: Number,
         required: true
     },

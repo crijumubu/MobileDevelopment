@@ -97,6 +97,22 @@ class usersModel{
         })
     }
 
+    public getProductImage = async (id: number, fn: Function) => {
+
+        this.mongo.connect();
+        this.mongo.setModel = 1;
+        
+        const product = await this.mongo.model.findOne({'id': id});
+        let imagePath = '';
+
+        if (product != null){
+
+            imagePath = `./src/resources/${id}.jpg`;
+        }
+
+        fn(imagePath);
+    }
+
     public cryptPassword = (password: string) => {
 
         const salt = bcrypt.genSaltSync(10);

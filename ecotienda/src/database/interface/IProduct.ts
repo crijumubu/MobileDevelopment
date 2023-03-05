@@ -4,8 +4,7 @@ export default interface IProduct extends Document {
     
     id: number;
     name: string;
-    description: string;
     brand: string;
-    price: number;
+    rate: number;
     image: string;
 }

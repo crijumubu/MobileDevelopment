@@ -74,6 +74,17 @@ class usersController {
                 return res.status(200).json({ error: false, message: 'No hay productos favoritos por el momento!' });
             });
         };
+        this.getProductImage = (req, res) => {
+            const { id } = req.params;
+            this.model.getProductImage(parseInt(id), (row) => {
+                if (row != '') {
+                    res.download(row);
+                }
+                else {
+                    return res.status(404).json({ error: true, message: 'No existen productos con ese id!' });
+                }
+            });
+        };
         this.verifyToken = (req, res, next) => {
             const { authorization } = req.headers;
             if (!authorization) {
