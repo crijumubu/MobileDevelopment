@@ -24,11 +24,10 @@ class usersModel {
                 if (response.length == 1) {
                     if (bcryptjs_1.default.compareSync(password, response[0]['password'])) {
                         fn(1);
+                        return;
                     }
                 }
-                else {
-                    fn(0);
-                }
+                fn(0);
             })
                 .catch((error) => {
                 fn(-1);

@@ -17,21 +17,24 @@ class usersController{
         const { email, password } = req.body;
 
         this.model.login(email, password, (status: number) => {
-
+        
             switch (status){
 
                 case 1:
 
+                console.log('Entre 1');
                     const token = jwt.sign({email: email}, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
                     res.header('auth-token', token).json({ error: null, data: {email, token} });
                     break;
 
                 case 0:
-
+                    
+                    console.log('Entre 0');
                     return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!'});
                 
                 case -1:
 
+                    console.log('Entre -1');
                     return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!'});
             }
         });

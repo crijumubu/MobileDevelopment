@@ -15,20 +15,20 @@ class usersModel{
 
         this.mongo.connect();
         this.mongo.setModel = 0;
-
+        
         await this.mongo.model.find({'email': email}, {'password': 1, '_id': 0})
         .then((response: any) => {
             
             if(response.length == 1){
-
-                if (bcrypt.compareSync(password, response[0]['password'])){
-
-                    fn(1);
-                }
-            }else{
                 
-                fn(0);
+                if (bcrypt.compareSync(password, response[0]['password'])){
+                    
+                    fn(1);
+                    return;
+                }
             }
+
+            fn(0);
         })
         .catch((error: any) => {
 
