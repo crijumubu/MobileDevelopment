@@ -16,14 +16,14 @@ class usersController{
 
         const { email, password } = req.body;
 
-        this.model.login(email, password, (status: number, name?: string) => {
+        this.model.login(email, password, (status: number) => {
 
             switch (status){
 
                 case 1:
 
-                    const token = jwt.sign({ name: name, email: email}, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
-                    res.header('auth-token', token).json({ error: null, data: {name, token} });
+                    const token = jwt.sign({email: email}, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
+                    res.header('auth-token', token).json({ error: null, data: {email, token} });
                     break;
 
                 case 0:
@@ -39,9 +39,9 @@ class usersController{
 
     public register = (req: Request, res: Response) => {
 
-        const { name, email, password } = req.body;
+        const { email, password } = req.body;
 
-        this.model.register(name, email, password, (error: any) => {
+        this.model.register(email, password, (error: any) => {
             
             if (!error){
 

@@ -18,11 +18,11 @@ class usersController {
     constructor() {
         this.login = (req, res) => {
             const { email, password } = req.body;
-            this.model.login(email, password, (status, name) => {
+            this.model.login(email, password, (status) => {
                 switch (status) {
                     case 1:
-                        const token = jwt.sign({ name: name, email: email }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
-                        res.header('auth-token', token).json({ error: null, data: { name, token } });
+                        const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, { expiresIn: '7d', algorithm: "HS256" });
+                        res.header('auth-token', token).json({ error: null, data: { email, token } });
                         break;
                     case 0:
                         return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!' });
@@ -32,8 +32,8 @@ class usersController {
             });
         };
         this.register = (req, res) => {
-            const { name, email, password } = req.body;
-            this.model.register(name, email, password, (error) => {
+            const { email, password } = req.body;
+            this.model.register(email, password, (error) => {
                 if (!error) {
                     return res.status(200).json({ error: false, message: 'Registro exitóso!' });
                 }
