@@ -1,7 +1,5 @@
-import { EmitFlags } from 'typescript';
 import mongo from '../database/mongo';
 import bcrypt from 'bcryptjs';
-import { response } from 'express';
 
 class usersModel{
 
@@ -74,20 +72,19 @@ class usersModel{
         });
     }
 
-    // TODO - Validar que el producto verdaderamente exista
-    public addFavorites = async (email: string, product: number, fn: Function) => {
+    public addFavorites = async (email: string, products: number[], fn: Function) => {
         
 
         this.mongo.connect();
         this.mongo.setModel = 0;
         
-        if (typeof product == 'string'){
+        if (!Array.isArray(products)){
 
             fn(0);
             return;
         }
 
-        await this.mongo.model.findOneAndUpdate({'email': email}, {$push: {'favorites': product}})
+        await this.mongo.model.updateOne({'email': email}, {$set: {'favorites': products}})
         .then((response: any, error: any) => {
             
             if (!error){

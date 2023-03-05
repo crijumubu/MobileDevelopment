@@ -57,15 +57,14 @@ class usersModel {
                 fn(error, response);
             });
         });
-        // TODO - Validar que el producto verdaderamente exista
-        this.addFavorites = (email, product, fn) => __awaiter(this, void 0, void 0, function* () {
+        this.addFavorites = (email, products, fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();
             this.mongo.setModel = 0;
-            if (typeof product == 'string') {
+            if (!Array.isArray(products)) {
                 fn(0);
                 return;
             }
-            yield this.mongo.model.findOneAndUpdate({ 'email': email }, { $push: { 'favorites': product } })
+            yield this.mongo.model.updateOne({ 'email': email }, { $set: { 'favorites': products } })
                 .then((response, error) => {
                 if (!error) {
                     fn(1);

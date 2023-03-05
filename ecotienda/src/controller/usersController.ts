@@ -81,10 +81,10 @@ class usersController{
 
     public addFavorites = (req: Request, res: Response) => {
 
-        const { product } = req.body;
+        const { products } = req.body;
         const email = req.body.user["email"];
 
-        this.model.addFavorites(email, product, (status: number) => {
+        this.model.addFavorites(email, products, (status: number) => {
 
             switch (status){
 

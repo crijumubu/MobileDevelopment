@@ -49,9 +49,9 @@ class usersController {
             });
         };
         this.addFavorites = (req, res) => {
-            const { product } = req.body;
+            const { products } = req.body;
             const email = req.body.user["email"];
-            this.model.addFavorites(email, product, (status) => {
+            this.model.addFavorites(email, products, (status) => {
                 switch (status) {
                     case 1:
                         return res.status(200).json({ error: false, message: 'Inserción exitosa!' });
