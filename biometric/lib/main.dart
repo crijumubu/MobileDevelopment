@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 
           primarySwatch: Colors.blue,
         ),
-        home: const App(title: 'Iniciar sesión'),
+        home: const App(),
         debugShowCheckedModeBanner: false
     );
   }

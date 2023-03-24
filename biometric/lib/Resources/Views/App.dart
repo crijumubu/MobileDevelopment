@@ -1,11 +1,11 @@
 import 'package:biometric/Resources/Controller/Auth_controller.dart';
+import 'package:biometric/Resources/Views/Authorize.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class App extends StatefulWidget{
 
-  final String title;
-  const App({super.key, required this.title});
+  const App({super.key});
 
   @override
   State<App> createState() => _AppState();
@@ -13,9 +13,35 @@ class App extends StatefulWidget{
 
 class _AppState extends State<App>{
 
+  final String _title = 'Iniciar sesión';
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<void> _displayAlert(String title, String content) async{
+
+    await showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actions: [
+              TextButton(
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  }, child: Text('Ok'))
+            ],
+          );
+        }
+    );
+  }
+
+  void clearInputs(){
+
+    _email.text = '';
+    _password.text = '';
+  }
 
   @override
   void dispose(){
@@ -33,7 +59,7 @@ class _AppState extends State<App>{
         appBar: AppBar(
 
           automaticallyImplyLeading: false,
-          title: Text(widget.title, style: GoogleFonts.openSans(fontSize: 23, fontWeight: FontWeight.w600, color: Colors.white)),
+          title: Text(_title, style: GoogleFonts.openSans(fontSize: 23, fontWeight: FontWeight.w600, color: Colors.white)),
           centerTitle: true,
         ),
         body: ListView(
@@ -67,13 +93,14 @@ class _AppState extends State<App>{
                             controller: _email,
                             enableInteractiveSelection: false,
                             decoration: const InputDecoration(hintText: 'Email', suffixIcon: Icon(Icons.account_circle_outlined)),
-
                             validator: (value) {
 
                               if (value == null || value.isEmpty) {
+
                                 return 'Por favor, introduzca su correo electrónico';
                               }
                               else if (!value.contains('@') || !value.contains('.')){
+
                                 return 'Introduzca un correo electrónico válido';
                               }
 
@@ -91,10 +118,10 @@ class _AppState extends State<App>{
                             enableInteractiveSelection: false,
                             obscureText: true,
                             decoration: const InputDecoration(hintText: 'Contraseña', suffixIcon: Icon(Icons.lock_outline)),
-
                             validator: (password) {
 
                               if (password == null || password.isEmpty) {
+
                                 return 'Por favor, introduzca su contraseña';
                               }
 
@@ -105,27 +132,69 @@ class _AppState extends State<App>{
 
                         Padding(
 
-                          padding: const EdgeInsets.only(top: 60,right: 30, left: 30),
-                          child: ElevatedButton(
+                          padding: const EdgeInsets.only(top: 20,right: 30, left: 30),
+                          child: Column(
 
-                            onPressed: () async{
+                            children: [
 
-                              if (_formKey.currentState!.validate()) {
+                              SizedBox(
 
-                                bool response = await AuthController.loginUser(_email.text, _password.text);
+                                width: double.infinity,
+                                height: 40,
+                                child: ElevatedButton( onPressed: () async{
 
-                                if (response){
+                                    if (_formKey.currentState!.validate()) {
 
-                                  print('Bienvenido al sistema');
-                                }else{
+                                      bool response = await AuthController.loginUser(_email.text, _password.text);
+                                      if (response){
 
-                                  print('Login erroneo');
-                                }
-                                //Navigator.push(context, MaterialPageRoute(builder: (context) => Menu()));
-                              }
-                            },
+                                        await _displayAlert('Inicio de sesión exitóso', 'Bienvenido al sistema');
+                                        clearInputs();
+                                        if (!AuthController.fingerAuthorization){
 
-                            child: Text("Ingresar", style: GoogleFonts.openSans(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white)),
+                                          if (!mounted) return;
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => Authorize()));
+                                        }
+                                      }
+                                      else{
+
+                                        _displayAlert('Credenciales incorrectas', 'Usuario o contraseña errónea');
+                                        clearInputs();
+                                      }
+                                    }
+                                  }, child: Text("Ingresar", style: GoogleFonts.openSans(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white)),
+                                ),
+                              ),
+
+                              AuthController.fingerAuthorization ? Padding(
+
+                                padding: const EdgeInsets.only(top: 30),
+                                child: ElevatedButton(onPressed: () async{
+
+                                  if (await AuthController.authenticate()){
+
+                                    _displayAlert('Inicio de sesión exitóso', 'Bienvenido al sistema');
+                                    clearInputs();
+                                  }
+                                }, child: Padding(
+
+                                  padding: const EdgeInsets.all(15),
+                                  child: Column(
+
+                                    children: [
+
+                                      const Icon(IconData(0xe287, fontFamily: 'MaterialIcons'), size: 48.0),
+                                      Padding(
+
+                                        padding: const EdgeInsets.only(top: 15),
+                                        child: Text("Ingresa con\nhuella", style: GoogleFonts.openSans(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white), textAlign: TextAlign.center),
+                                      )
+                                    ],
+                                  ),
+                                )),
+                              )
+                              : Container(),
+                              ],
                           ),
                         )
                       ],
