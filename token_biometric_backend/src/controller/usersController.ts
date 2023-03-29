@@ -15,9 +15,6 @@ class usersController{
     public login = (req: Request, res: Response) => {
 
         const { email, password, token } = req.body;
-
-        let queryResponse : string = "";
-        let queryStatus : number = 0;
         
         this.model.login(email, password, token, (status: number, response: string) => {
                 
@@ -52,15 +49,19 @@ class usersController{
 
                     const token = jwt.sign({email: email}, process.env.TOKEN_SECRET, { expiresIn: '10y', algorithm: "HS256" });
 
-                    this.model.biometricToken(email, token, (status: number) => {
+                    this.model.biometricToken(email, token, (biometricStatus: number) => {
 
-                        if (status != -1){
+                        if (biometricStatus != -1){
 
-                            return res.header('auth-token', token).json({ error: null, data: {email, token} });
+                            return res.json({ error: null, data: {email, token} });
+                        
                         }
+                        else{
 
-                        return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la habilitación biométrica' });
+                            return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la habilitación biométrica' });
+                        }
                     });
+                    break;
 
                 case 0:
                     
@@ -94,10 +95,10 @@ class usersController{
 
             if (error instanceof jwt.TokenExpiredError){
                 
-                res.status(200).json({ error: true, message: 'El token ha expirado!' });
+                return res.status(200).json({ error: true, message: 'El token ha expirado!' });
             }
             
-            res.status(406).json({ error: true, message: 'EL token no es válido!' });
+            return res.status(406).json({ error: true, message: 'EL token no es válido!' });
         }
     }
 }
