@@ -13,7 +13,8 @@ const usersSchema = new Schema({
     },
     token: {
         type: String,
-        requied: true
+        requied: true,
+        unique: true
     }
 }, 
 {

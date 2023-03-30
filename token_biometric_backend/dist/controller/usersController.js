@@ -15,20 +15,20 @@ class usersController {
                         const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, { expiresIn: '7m', algorithm: "HS256" });
                         return res.header('auth-token', token).json({ error: null, data: { response, token } });
                     case 0:
-                        return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!' });
+                        return res.status(401).json({ error: true, message: 'Email, contraseña o token incorrecto!' });
                     case -1:
                         return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
                 }
             });
         };
-        this.biometric = (req, res) => {
+        this.enable_biometric = (req, res) => {
             const { email, password } = req.body;
             let token = "";
             this.model.login(email, password, token, (status) => {
                 switch (status) {
                     case 1:
                         const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, { expiresIn: '10y', algorithm: "HS256" });
-                        this.model.biometricToken(email, token, (biometricStatus) => {
+                        this.model.biometric(email, token, (biometricStatus) => {
                             if (biometricStatus != -1) {
                                 return res.json({ error: null, data: { email, token } });
                             }
@@ -41,6 +41,18 @@ class usersController {
                         return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!' });
                     case -1:
                         return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
+                }
+            });
+        };
+        this.disable_biometric = (req, res) => {
+            const { email } = req.body;
+            const token = "";
+            this.model.biometric(email, token, (biometricStatus) => {
+                if (biometricStatus != -1) {
+                    return res.status(200).json({ error: false, message: 'Deshabilitación biométrica exitósa!' });
+                }
+                else {
+                    return res.status(500).json({ error: true, message: 'Algo ha salido mal al deshabilitar el acceso biométrico' });
                 }
             });
         };

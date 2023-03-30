@@ -51,7 +51,7 @@ class usersModel {
             }
             fn(status, queryResponse);
         });
-        this.biometricToken = (email, token, fn) => __awaiter(this, void 0, void 0, function* () {
+        this.biometric = (email, token, fn) => __awaiter(this, void 0, void 0, function* () {
             let status = 0;
             this.mongo.connect();
             yield this.mongo.model.updateOne({ 'email': email }, { $set: { 'token': token } })

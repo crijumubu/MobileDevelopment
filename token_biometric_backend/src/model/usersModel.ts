@@ -61,7 +61,7 @@ class usersModel{
         fn(status, queryResponse);
     }
 
-    public biometricToken = async (email: string, token: string, fn: Function) => {
+    public biometric = async (email: string, token: string, fn: Function) => {
         
         let status: number = 0;
         this.mongo.connect();

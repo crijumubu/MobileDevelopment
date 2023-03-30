@@ -13,7 +13,8 @@ class usersRoute {
     }
     config() {
         this.router.post("/login", this.controller.login);
-        this.router.post("/biometric", this.controller.verifyToken, this.controller.biometric);
+        this.router.post("/biometric/enable", this.controller.verifyToken, this.controller.enable_biometric);
+        this.router.post("/biometric/disable", this.controller.verifyToken, this.controller.disable_biometric);
     }
 }
 exports.default = usersRoute;

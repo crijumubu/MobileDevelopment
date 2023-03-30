@@ -13,7 +13,8 @@ const usersSchema = new mongoose_1.Schema({
     },
     token: {
         type: String,
-        requied: true
+        requied: true,
+        unique: true
     }
 }, {
     versionKey: false

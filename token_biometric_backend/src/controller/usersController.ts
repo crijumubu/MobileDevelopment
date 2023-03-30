@@ -27,7 +27,7 @@ class usersController{
 
                 case 0:
                     
-                    return res.status(401).json({ error: true, message: 'Email o contraseña incorrecta!'});
+                    return res.status(401).json({ error: true, message: 'Email, contraseña o token incorrecto!'});
                 
                 case -1:
 
@@ -36,7 +36,7 @@ class usersController{
         });
     }
 
-    public biometric = (req: Request, res: Response) => {
+    public enable_biometric = (req: Request, res: Response) => {
 
         const { email, password} = req.body;
         let token : string = "";
@@ -49,7 +49,7 @@ class usersController{
 
                     const token = jwt.sign({email: email}, process.env.TOKEN_SECRET, { expiresIn: '10y', algorithm: "HS256" });
 
-                    this.model.biometricToken(email, token, (biometricStatus: number) => {
+                    this.model.biometric(email, token, (biometricStatus: number) => {
 
                         if (biometricStatus != -1){
 
@@ -70,6 +70,25 @@ class usersController{
                 case -1:
 
                     return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!'});
+            }
+        });
+    }
+
+    public disable_biometric = (req: Request, res: Response) => {
+
+        const { email } = req.body;
+        const token : string = "";
+
+        this.model.biometric(email, token, (biometricStatus: number) => {
+
+            if (biometricStatus != -1){
+
+                return res.status(200).json({ error: false, message: 'Deshabilitación biométrica exitósa!' });
+            
+            }
+            else{
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al deshabilitar el acceso biométrico' });
             }
         });
     }
