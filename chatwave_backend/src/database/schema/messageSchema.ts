@@ -1,33 +1,28 @@
 import { Schema, model } from "mongoose";
-import IUsers from "../interface/IUser";
+import IMessage from "../interface/IMessage";
 
-const usersSchema = new Schema({
-    name: {
+const messageSchema = new Schema({
+    from: {
         type: String,
         requied: true
     },
-    email: {
+    to: {
         type: String,
         required: true,
-        unique: true
     },
-    password: {
+    subject: {
         type: String,
         requied: true
     },
-    phone: {
+    message: {
         type: String,
         requied: true
     },
-    position: {
-        type: String,
+    device: {
+        type: Array,
         requied: true
     },
-    photo: {
-        type: String,
-        requied: true
-    },
-    fcmTokens: {
+    deviceStatus: {
         type: Array,
         requied: true
     }
@@ -36,4 +31,4 @@ const usersSchema = new Schema({
     versionKey: false
 });
 
-export default model<IUsers>('users', usersSchema);
+export default model<IMessage>('messages', messageSchema);

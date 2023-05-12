@@ -22,8 +22,7 @@ class Server {
     public config = () => {
 
         this.backend.set("port", process.env.PORT);
-        //this.backend.use(urlencoded({limit: '200mb', extended: true}));
-        this.backend.use(json({limit: '200mb'}));
+        this.backend.use(json({limit: '200kb'}));
         this.backend.use(cors());
     }
 

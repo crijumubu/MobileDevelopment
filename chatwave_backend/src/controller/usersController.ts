@@ -14,9 +14,9 @@ class usersController{
 
     public login = (req: Request, res: Response) => {
 
-        const { email, password } = req.body;
+        const { email, password, fcmToken } = req.body;
 
-        this.model.login(email, password, (status: number) => {
+        this.model.login(email, password, fcmToken, (status: number) => {
         
             switch (status){
 
@@ -38,9 +38,9 @@ class usersController{
 
     public register = (req: Request, res: Response) => {
 
-        const { name, email, password, phone, position, photo} = req.body;
+        const { name, email, password, phone, position, photo, fcmToken} = req.body;
 
-        this.model.register(name, email, password, phone, position, photo, (status: number) => {
+        this.model.register(name, email, password, phone, position, photo, fcmToken, (status: number) => {
             
             switch (status){
 
@@ -56,6 +56,99 @@ class usersController{
 
                     return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar el registro!' });
             }
+        });
+    }
+
+    public sendMessage = (req: Request, res: Response) => {
+
+        const from = req.body.user['email'];        
+        const {to, subject, message} = req.body;
+        
+        if (from != to){
+
+            this.model.sendMessage(from, to, subject, message, (status: number) => {
+            
+                switch (status){
+    
+                    case 1:
+    
+                        return res.status(200).json({ error: false, message: 'Mensaje enviado exitosamente!' });
+                    
+                    case 0:
+    
+                        return res.status(500).json({ error: true, message: 'Algo ha salido mal al obtener los dispositivos del destinatario. Es probable que el usuario destinatario no exista!' });
+
+                    case -1:
+    
+                        return res.status(500).json({ error: true, message: 'Algo ha salido mal al enviar el mensaje!' });
+                }
+            });
+        }
+        else{
+
+            return res.status(405).json({ error: true, message: 'El mensaje no ha podido ser enviado debido a que el remitente y el receptor corresponden al mismo usuario!' });
+        }
+    }
+
+    public getUsers = (req: Request, res: Response) => {
+        
+        const from = req.body.user['email'];   
+
+        this.model.getUsers(from, (row: JSON, error: any) => {
+            
+            if (error){
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al realizar la consulta de usuarios!' });
+            }
+
+            if (Object.keys(row).length != 0){
+
+                return res.status(200).json(row);
+            }
+
+            return res.status(200).json({ error: false, message: 'No hay usuarios en el sistema por el momento!' });
+        });
+    }
+
+    public getSentMessages = (req: Request, res: Response) => {
+
+        const from = req.body.user['email'];  
+        const {to} = req.params;   
+        
+        this.model.getSentMessages(from, to, (row: JSON, error: any) => { 
+
+            if (error){
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al obtener los mensajes!' });
+            }
+
+            if (Object.keys(row).length != 0){
+
+                return res.status(200).json(row);
+            }
+
+            return res.status(200).json({ error: false, message: 'No hay mensajes enviados a ese usuario!' });
+        });
+    }
+
+    public getReceivedMessages = (req: Request, res: Response) => {
+
+        const {from} = req.params;  
+        const to = req.body.user['email'];      
+
+        this.model.getSentMessages(from, to, (row: JSON, error: any) => { 
+
+            if (error){
+
+                return res.status(500).json({ error: true, message: 'Algo ha salido mal al obtener los mensajes!' });
+            }
+
+            if (Object.keys(row).length != 0){
+
+                return res.status(200).json(row);
+            }
+
+            return res.status(200).json({ error: false, message: 'No hay mensajes enviados por ese usuario!' });
         });
     }
 

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import userSchema from "./schema/userSchema";
+import messageSchema from "./schema/messageSchema";
 
 class mongo{
 
@@ -24,6 +25,20 @@ class mongo{
             console.error('Error connecting to MongoDB Atlas: ', error);
             return process.exit(1);
         });
+    }
+
+    public setModel = (modelValue: number) => {
+
+        switch(modelValue){
+
+            case 0:
+                this.model = userSchema;
+                break;
+                
+            case 1:
+                this.model = messageSchema;
+                break;
+        }
     }
 }
 

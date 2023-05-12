@@ -9,6 +9,7 @@ npm i dotenv
 npm i jsonwebtoken
 npm i bcryptjs
 npm i cors
+npm i firebase-admin
 
 npm i @types/express -D
 npm i @types/cors -D

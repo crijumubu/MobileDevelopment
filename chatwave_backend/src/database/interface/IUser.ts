@@ -8,4 +8,5 @@ export default interface IUser extends Document{
     phone: string;
     position: string;
     photo: string;
+    fcmTokens: string[];
 }

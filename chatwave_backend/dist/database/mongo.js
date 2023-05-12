@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const userSchema_1 = __importDefault(require("./schema/userSchema"));
+const messageSchema_1 = __importDefault(require("./schema/messageSchema"));
 class mongo {
     constructor() {
         this.connect = () => {
@@ -16,6 +17,16 @@ class mongo {
                 console.error('Error connecting to MongoDB Atlas: ', error);
                 return process.exit(1);
             });
+        };
+        this.setModel = (modelValue) => {
+            switch (modelValue) {
+                case 0:
+                    this.model = userSchema_1.default;
+                    break;
+                case 1:
+                    this.model = messageSchema_1.default;
+                    break;
+            }
         };
         this.uri = `${process.env.MONGODB}`;
         this.model = userSchema_1.default;
