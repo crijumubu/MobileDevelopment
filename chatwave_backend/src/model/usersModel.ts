@@ -115,15 +115,16 @@ class usersModel{
                     fn(-1);
                     return;
                 });
-
-                fn(1);
             });
         })
         .catch(() => { 
 
             fn(-1);
             return;
-        });;
+        });
+
+        fn(1);
+        return;
     }
 
     public getUsers = async (from: string, fn: Function) => {

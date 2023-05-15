@@ -34,7 +34,7 @@ class Server {
     constructor() {
         this.config = () => {
             this.backend.set("port", process.env.PORT);
-            this.backend.use((0, express_1.json)({ limit: '200kb' }));
+            this.backend.use((0, express_1.json)({ limit: '1Mb' }));
             this.backend.use((0, cors_1.default)());
         };
         this.route = () => {

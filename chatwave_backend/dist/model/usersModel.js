@@ -85,14 +85,14 @@ class usersModel {
                         fn(-1);
                         return;
                     });
-                    fn(1);
                 }));
             })
                 .catch(() => {
                 fn(-1);
                 return;
             });
-            ;
+            fn(1);
+            return;
         });
         this.getUsers = (from, fn) => __awaiter(this, void 0, void 0, function* () {
             this.mongo.connect();

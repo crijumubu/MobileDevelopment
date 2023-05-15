@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export default interface IUser extends Document{
+export default interface IMessage extends Document{
 
     from: string;
     to: string;
